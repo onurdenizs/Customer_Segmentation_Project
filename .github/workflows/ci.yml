@@ -23,14 +23,17 @@ jobs:
       with:
         python-version: 3.12
 
-    # Step 3: Install system dependencies including distutils
+    # Step 3: Install system dependencies including distutils and build essentials
     - name: Install system dependencies
-      run: sudo apt-get update && sudo apt-get install -y python3-distutils python3-dev build-essential
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y python3-distutils python3-dev build-essential
 
     # Step 4: Install dependencies from requirements.txt
     - name: Install dependencies
       run: |
-        pip install --upgrade pip
+        python -m ensurepip --upgrade  # Ensure pip is installed
+        pip install --upgrade pip setuptools wheel
         pip install -r requirements.txt
 
     # Step 5: Run the tests with coverage
