@@ -13,42 +13,38 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # Step 1: Check out the repository code
     - name: Check out code
       uses: actions/checkout@v3
 
-    # Step 2: Set up Python 3.12
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: 3.12
 
-    # Step 3: Install system dependencies including distutils and build essentials
     - name: Install system dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y python3-distutils python3-dev build-essential
 
-    # Step 4: Install dependencies from requirements.txt
+    - name: Upgrade pip, setuptools, and wheel
+      run: |
+        python -m ensurepip --upgrade
+        pip install --upgrade pip setuptools wheel
+
     - name: Install dependencies
       run: |
-        python -m ensurepip --upgrade  # Ensure pip is installed
-        pip install --upgrade pip setuptools wheel
         pip install -r requirements.txt
 
-    # Step 5: Run the tests with coverage
     - name: Run tests and collect coverage
       run: |
         pytest --cov=src --maxfail=1 --disable-warnings -v
       env:
         CI: true
 
-    # Step 6: Upload coverage report to Codecov (Optional, requires Codecov setup)
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
       with:
-        token: ${{ secrets.CODECOV_TOKEN }}  # Add your Codecov token in GitHub Secrets
+        token: ${{ secrets.CODECOV_TOKEN }}
 
-    # Step 7: Post results to GitHub (optional)
     - name: Post coverage results
       run: coverage report -m
