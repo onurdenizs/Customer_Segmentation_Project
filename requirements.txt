@@ -1,6 +1,7 @@
-# Customer_Segmentation_Project
 pandas==2.1.1
 numpy==2.1.2
 matplotlib==3.9.2
 seaborn==0.13.2
 scikit-learn==1.5.2
+pytest==7.4.0  # Add pytest
+pytest-cov==4.1.0  # Add pytest-cov
