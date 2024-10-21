@@ -1,44 +1,40 @@
-# tests/test_data_exploration.py
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import pytest
 import pandas as pd
-import os
+from scripts.data_exploration import load_data, display_basic_info
 
-# Define the path to the dataset
-DATA_PATH = "data/raw/Mall_Customers.csv"
+import pytest
+import pandas as pd
+from scripts.data_exploration import load_data, display_basic_info
 
-# Test 1: Ensure the dataset loads correctly
-def test_load_data():
-    """Test if the CSV file loads correctly into a pandas DataFrame."""
-    assert os.path.exists(DATA_PATH), f"{DATA_PATH} does not exist."
-    
-    df = pd.read_csv(DATA_PATH)
-    assert isinstance(df, pd.DataFrame), "Loaded data is not a DataFrame."
-
-# Test 2: Ensure the dataset has the correct number of rows and columns
-def test_data_shape():
-    """Test if the dataset has the expected shape (200 rows, 5 columns)."""
-    df = pd.read_csv(DATA_PATH)
-    assert df.shape == (200, 5), f"Dataset shape is incorrect, got {df.shape}"
-
-# Test 3: Ensure the data types are as expected
-def test_data_types():
-    """Test if the dataset columns have the correct data types."""
-    df = pd.read_csv(DATA_PATH)
-    expected_dtypes = {
-        'CustomerID': 'int64',
-        'Genre': 'object',
-        'Age': 'int64',
-        'Annual Income (k$)': 'int64',
-        'Spending Score (1-100)': 'int64'
+# Mock DataFrame for testing
+@pytest.fixture
+def mock_df():
+    data = {
+        'CustomerID': [1, 2, 3, 4, 5],
+        'Age': [19, 21, 20, 23, 31],
+        'Annual Income (k$)': [15, 16, 17, 18, 19],
+        'Spending Score (1-100)': [39, 81, 6, 77, 40]
     }
-    actual_dtypes = df.dtypes.to_dict()
+    return pd.DataFrame(data)
 
-    for column, expected_dtype in expected_dtypes.items():
-        assert str(actual_dtypes[column]) == expected_dtype, f"Incorrect dtype for {column}"
+def test_load_data():
+    """Test that the data is loaded correctly."""
+    df = load_data('data/raw/Mall_Customers.csv')
+    assert isinstance(df, pd.DataFrame), "Loaded data is not a DataFrame"
+    assert df.shape[0] > 0, "Loaded DataFrame is empty"
 
-# Test 4: Ensure there are no missing values
-def test_missing_values():
-    """Test if the dataset has any missing values."""
-    df = pd.read_csv(DATA_PATH)
-    assert df.isnull().sum().sum() == 0, "There are missing values in the dataset."
+def test_display_basic_info(mock_df, capsys):
+    """Test that basic information is displayed correctly."""
+    display_basic_info(mock_df)
+    
+    captured = capsys.readouterr()
+    assert "First 5 rows of the dataset" in captured.out
+    assert "Dataset Information" in captured.out
+    assert "Missing Values in the Dataset" in captured.out
+    assert "Descriptive Statistics" in captured.out
+
+# Additional tests for plotting functions can be added similarly

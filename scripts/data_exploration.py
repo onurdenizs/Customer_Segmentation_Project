@@ -20,7 +20,7 @@ SAVE_DIR = 'reports/figures/'  # Directory to save output figures
 DPI_VALUE = 900  # High-resolution for saved images (DPI)
 
 
-def load_data(file_path):
+def load_data(file_path: str) -> pd.DataFrame:
     """
     Load dataset from a CSV file.
 
@@ -32,7 +32,8 @@ def load_data(file_path):
     """
     return pd.read_csv(file_path)
 
-def display_basic_info(df):
+
+def display_basic_info(df: pd.DataFrame) -> None:
     """
     Display basic information of the dataset including the first 5 rows, dataset info, 
     missing values, and descriptive statistics.
@@ -44,7 +45,7 @@ def display_basic_info(df):
     print(df.head())
 
     print("\nDataset Information:")
-    print(df.info())
+    df.info()
 
     print("\nMissing Values in the Dataset:")
     print(df.isnull().sum())
@@ -52,12 +53,13 @@ def display_basic_info(df):
     print("\nDescriptive Statistics:")
     print(df.describe())
 
-def save_and_show_plot(fig, filename, save_dir, dpi_value):
+
+def save_and_show_plot(fig: plt.Figure, filename: str, save_dir: str, dpi_value: int) -> None:
     """
     Save a figure as an image and display it.
 
     Args:
-        fig (matplotlib.figure.Figure): The figure object to save.
+        fig (plt.Figure): The figure object to save.
         filename (str): The name of the file to save the figure.
         save_dir (str): The directory to save the figure in.
         dpi_value (int): The resolution of the saved image in DPI.
@@ -67,7 +69,8 @@ def save_and_show_plot(fig, filename, save_dir, dpi_value):
     fig.savefig(os.path.join(save_dir, filename), format='jpeg', dpi=dpi_value)
     plt.show()
 
-def plot_histogram(df, column, title, xlabel, filename):
+
+def plot_histogram(df: pd.DataFrame, column: str, title: str, xlabel: str, filename: str) -> None:
     """
     Plot and save a histogram for a specified column.
 
@@ -85,7 +88,8 @@ def plot_histogram(df, column, title, xlabel, filename):
     plt.ylabel('Frequency')
     save_and_show_plot(fig, filename, SAVE_DIR, DPI_VALUE)
 
-def plot_scatter(df, x_col, y_col, title, xlabel, ylabel, filename):
+
+def plot_scatter(df: pd.DataFrame, x_col: str, y_col: str, title: str, xlabel: str, ylabel: str, filename: str) -> None:
     """
     Plot and save a scatter plot for two specified columns.
 
@@ -104,6 +108,7 @@ def plot_scatter(df, x_col, y_col, title, xlabel, ylabel, filename):
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     save_and_show_plot(fig, filename, SAVE_DIR, DPI_VALUE)
+
 
 if __name__ == "__main__":
     # Step 1: Load the dataset
