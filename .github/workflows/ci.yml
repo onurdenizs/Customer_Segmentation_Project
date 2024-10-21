@@ -1,4 +1,4 @@
-name: Python package
+name: Test and Coverage
 
 on:
   push:
@@ -11,28 +11,46 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v3
+    # Step 1: Clear the cache for pip dependencies
+    - name: Clear the cache
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.12  # Match the version you're using
+    # Step 2: Check out the repository code
+    - name: Check out code
+      uses: actions/checkout@v3
 
-      - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
-          pip install pytest pytest-cov codecov
+    # Step 3: Set up Python 3.12
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.12
 
-      - name: Run tests with coverage
-        run: |
-          pytest --cov=scripts --cov-report=xml
+    # Step 4: Install dependencies from requirements.txt
+    - name: Install dependencies
+      run: |
+        pip install --upgrade pip
+        pip install -r requirements.txt
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          file: ./coverage.xml
-          flags: unittests
-          name: codecov-umbrella
-          fail_ci_if_error: true
+    # Step 5: Run the tests with coverage
+    - name: Run tests and collect coverage
+      run: |
+        pytest --cov=src --maxfail=1 --disable-warnings -v
+      env:
+        CI: true
+
+    # Step 6: Upload coverage report to Codecov (Optional, requires Codecov setup)
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}  # Add your Codecov token in GitHub Secrets
+
+    # Step 7: Post results to GitHub (optional)
+    - name: Post coverage results
+      run: coverage report -m
