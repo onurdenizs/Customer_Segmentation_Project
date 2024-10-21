@@ -15,9 +15,10 @@ import seaborn as sns
 import os
 
 # Constants
-DATA_PATH = "data/raw/Mall_Customers.csv"
-SAVE_DIR = 'reports/figures/'
-DPI_VALUE = 900  # High-resolution figure (DPI)
+DATA_PATH = "data/raw/Mall_Customers.csv"  # Path to the raw data file
+SAVE_DIR = 'reports/figures/'  # Directory to save output figures
+DPI_VALUE = 900  # High-resolution for saved images (DPI)
+
 
 def load_data(file_path):
     """
