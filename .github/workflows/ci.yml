@@ -32,25 +32,29 @@ jobs:
       with:
         python-version: 3.12
 
-    # Step 4: Install dependencies from requirements.txt
+    # Step 4: Install system dependencies (including distutils)
+    - name: Install system dependencies
+      run: sudo apt-get update && sudo apt-get install -y python3-distutils
+
+    # Step 5: Install dependencies from requirements.txt
     - name: Install dependencies
       run: |
         pip install --upgrade pip
         pip install -r requirements.txt
 
-    # Step 5: Run the tests with coverage
+    # Step 6: Run the tests with coverage
     - name: Run tests and collect coverage
       run: |
         pytest --cov=src --maxfail=1 --disable-warnings -v
       env:
         CI: true
 
-    # Step 6: Upload coverage report to Codecov (Optional, requires Codecov setup)
+    # Step 7: Upload coverage report to Codecov (Optional, requires Codecov setup)
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
       with:
         token: ${{ secrets.CODECOV_TOKEN }}  # Add your Codecov token in GitHub Secrets
 
-    # Step 7: Post results to GitHub (optional)
+    # Step 8: Post results to GitHub (optional)
     - name: Post coverage results
       run: coverage report -m
