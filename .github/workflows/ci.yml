@@ -37,14 +37,15 @@ jobs:
 
     - name: Run tests and collect coverage
       run: |
-        pytest --cov=src --maxfail=1 --disable-warnings -v
+        pytest --cov=scripts --maxfail=1 --disable-warnings -v  # Change this to the correct folder
       env:
         CI: true
+
+    - name: Post coverage results
+      run: |
+        coverage report -m
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
-
-    - name: Post coverage results
-      run: coverage report -m
