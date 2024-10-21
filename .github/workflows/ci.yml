@@ -13,48 +13,39 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # Step 1: Clear the cache for pip dependencies
-    - name: Clear the cache
-      uses: actions/cache@v3
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
-
-    # Step 2: Check out the repository code
+    # Step 1: Check out the repository code
     - name: Check out code
       uses: actions/checkout@v3
 
-    # Step 3: Set up Python 3.12
+    # Step 2: Set up Python 3.12
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: 3.12
 
-    # Step 4: Install system dependencies (including distutils)
+    # Step 3: Install system dependencies including distutils
     - name: Install system dependencies
-      run: sudo apt-get update && sudo apt-get install -y python3-distutils
+      run: sudo apt-get update && sudo apt-get install -y python3-distutils python3-dev build-essential
 
-    # Step 5: Install dependencies from requirements.txt
+    # Step 4: Install dependencies from requirements.txt
     - name: Install dependencies
       run: |
         pip install --upgrade pip
         pip install -r requirements.txt
 
-    # Step 6: Run the tests with coverage
+    # Step 5: Run the tests with coverage
     - name: Run tests and collect coverage
       run: |
         pytest --cov=src --maxfail=1 --disable-warnings -v
       env:
         CI: true
 
-    # Step 7: Upload coverage report to Codecov (Optional, requires Codecov setup)
+    # Step 6: Upload coverage report to Codecov (Optional, requires Codecov setup)
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
       with:
         token: ${{ secrets.CODECOV_TOKEN }}  # Add your Codecov token in GitHub Secrets
 
-    # Step 8: Post results to GitHub (optional)
+    # Step 7: Post results to GitHub (optional)
     - name: Post coverage results
       run: coverage report -m
