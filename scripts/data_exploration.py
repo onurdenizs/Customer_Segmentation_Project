@@ -1,4 +1,4 @@
-"""
+"""" 
 data_exploration.py
 
 This script performs basic exploratory data analysis (EDA) on the Mall Customers dataset.
@@ -19,6 +19,25 @@ DATA_PATH = "data/raw/Mall_Customers.csv"  # Path to the raw data file
 SAVE_DIR = 'reports/figures/'  # Directory to save output figures
 DPI_VALUE = 900  # High-resolution for saved images (DPI)
 
+def handle_missing_values(df: pd.DataFrame, strategy='drop', fill_value=None) -> pd.DataFrame:
+    """
+    Handle missing values in the dataset.
+    
+    Args:
+        df (pd.DataFrame): DataFrame containing the dataset.
+        strategy (str): Strategy to handle missing values ('drop' to drop rows with missing values,
+                        'fill' to fill missing values).
+        fill_value (any): Value to fill missing values with, if strategy is 'fill'.
+        
+    Returns:
+        pd.DataFrame: DataFrame with missing values handled.
+    """
+    if strategy == 'drop':
+        return df.dropna()
+    elif strategy == 'fill' and fill_value is not None:
+        return df.fillna(fill_value)
+    else:
+        raise ValueError("Invalid strategy. Choose either 'drop' or 'fill' and provide a fill_value if filling.")
 
 def load_data(file_path: str) -> pd.DataFrame:
     """
@@ -31,7 +50,6 @@ def load_data(file_path: str) -> pd.DataFrame:
         pd.DataFrame: DataFrame containing the loaded dataset.
     """
     return pd.read_csv(file_path)
-
 
 def display_basic_info(df: pd.DataFrame) -> None:
     """
@@ -53,7 +71,6 @@ def display_basic_info(df: pd.DataFrame) -> None:
     print("\nDescriptive Statistics:")
     print(df.describe())
 
-
 def save_and_show_plot(fig: plt.Figure, filename: str, save_dir: str, dpi_value: int) -> None:
     """
     Save a figure as an image and display it.
@@ -68,7 +85,6 @@ def save_and_show_plot(fig: plt.Figure, filename: str, save_dir: str, dpi_value:
         os.makedirs(save_dir)
     fig.savefig(os.path.join(save_dir, filename), format='jpeg', dpi=dpi_value)
     plt.show()
-
 
 def plot_histogram(df: pd.DataFrame, column: str, title: str, xlabel: str, filename: str) -> None:
     """
@@ -87,7 +103,6 @@ def plot_histogram(df: pd.DataFrame, column: str, title: str, xlabel: str, filen
     plt.xlabel(xlabel)
     plt.ylabel('Frequency')
     save_and_show_plot(fig, filename, SAVE_DIR, DPI_VALUE)
-
 
 def plot_scatter(df: pd.DataFrame, x_col: str, y_col: str, title: str, xlabel: str, ylabel: str, filename: str) -> None:
     """
@@ -109,21 +124,23 @@ def plot_scatter(df: pd.DataFrame, x_col: str, y_col: str, title: str, xlabel: s
     plt.ylabel(ylabel)
     save_and_show_plot(fig, filename, SAVE_DIR, DPI_VALUE)
 
-
 if __name__ == "__main__":
     # Step 1: Load the dataset
     df = load_data(DATA_PATH)
 
-    # Step 2: Display basic info about the dataset
-    display_basic_info(df)
+    # Step 2: Handle missing values
+    df = handle_missing_values(df, strategy='drop')  # Adjust strategy as per requirement
 
-    # Step 3: Visualize age distribution
+    # Step 3: Display basic info about the dataset
+    display_basic_info(df)
+    
+    # Step 4: Visualize age distribution
     plot_histogram(df, 'Age', 'Age Distribution', 'Age', 'age_distribution.jpeg')
 
-    # Step 4: Visualize annual income distribution
+    # Step 5: Visualize annual income distribution
     plot_histogram(df, 'Annual Income (k$)', 'Annual Income Distribution', 'Annual Income (k$)', 'annual_income_distribution.jpeg')
 
-    # Step 5: Scatter plot of Annual Income vs Spending Score
+    # Step 6: Scatter plot of Annual Income vs Spending Score
     plot_scatter(df, 'Annual Income (k$)', 'Spending Score (1-100)', 
                  'Annual Income vs Spending Score', 'Annual Income (k$)', 
                  'Spending Score (1-100)', 'annual_income_vs_spending_score.jpeg')

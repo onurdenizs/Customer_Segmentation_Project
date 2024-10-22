@@ -38,3 +38,4 @@ def test_display_basic_info(mock_df, capsys):
     assert "Descriptive Statistics" in captured.out
 
 # Additional tests for plotting functions can be added similarly
+
