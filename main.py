@@ -1,6 +1,6 @@
 # main.py
 
-from scripts.data_preprocessing import handle_missing_values, encode_categorical
+from scripts.data_preprocessing import load_data, handle_missing_values, encode_categorical
 from scripts.correlation_analysis import calculate_correlation_matrix, plot_correlation_heatmap
 from scripts.visualization import plot_histogram, plot_scatter
 
@@ -10,7 +10,7 @@ DATA_PATH = "data/raw/Mall_Customers.csv"
 
 def main():
     # Load the dataset
-    df = pd.read_csv(DATA_PATH)
+    df = load_data(DATA_PATH)
 
     # Handle missing values
     df = handle_missing_values(df, strategy='drop')
