@@ -39,6 +39,20 @@ def handle_missing_values(df: pd.DataFrame, strategy='drop', fill_value=None) ->
     else:
         raise ValueError("Invalid strategy. Choose either 'drop' or 'fill' and provide a fill_value if filling.")
 
+def encode_categorical(df: pd.DataFrame, column: str) -> pd.DataFrame:
+    """
+    Encode a categorical variable using one-hot encoding.
+
+    Args:
+        df (pd.DataFrame): DataFrame containing the dataset.
+        column (str): The column to encode.
+
+    Returns:
+        pd.DataFrame: DataFrame with the categorical column encoded.
+    """
+    return pd.get_dummies(df, columns=[column], drop_first=False)
+
+
 def load_data(file_path: str) -> pd.DataFrame:
     """
     Load dataset from a CSV file.
@@ -129,18 +143,21 @@ if __name__ == "__main__":
     df = load_data(DATA_PATH)
 
     # Step 2: Handle missing values
-    df = handle_missing_values(df, strategy='drop')  # Adjust strategy as per requirement
+    df = handle_missing_values(df, strategy='drop')
 
-    # Step 3: Display basic info about the dataset
+    # Step 3: Encode categorical variables (e.g., 'Genre')
+    df = encode_categorical(df, 'Genre')
+
+    # Step 4: Display basic info about the dataset
     display_basic_info(df)
     
-    # Step 4: Visualize age distribution
+    # Step 5: Visualize age distribution
     plot_histogram(df, 'Age', 'Age Distribution', 'Age', 'age_distribution.jpeg')
 
-    # Step 5: Visualize annual income distribution
+    # Step 6: Visualize annual income distribution
     plot_histogram(df, 'Annual Income (k$)', 'Annual Income Distribution', 'Annual Income (k$)', 'annual_income_distribution.jpeg')
 
-    # Step 6: Scatter plot of Annual Income vs Spending Score
+    # Step 7: Scatter plot of Annual Income vs Spending Score
     plot_scatter(df, 'Annual Income (k$)', 'Spending Score (1-100)', 
                  'Annual Income vs Spending Score', 'Annual Income (k$)', 
                  'Spending Score (1-100)', 'annual_income_vs_spending_score.jpeg')
