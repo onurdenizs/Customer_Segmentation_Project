@@ -3,3 +3,6 @@ csp_env/
 __pycache__/
 .vscode/
 *.pyc
+htmlcov/
+.pytest_cache/
+.coverage
