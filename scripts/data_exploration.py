@@ -52,6 +52,26 @@ def encode_categorical(df: pd.DataFrame, column: str) -> pd.DataFrame:
     """
     return pd.get_dummies(df, columns=[column], drop_first=False)
 
+def handle_outliers(df: pd.DataFrame, columns: list) -> pd.DataFrame:
+    """
+    Handle outliers in the specified columns using the IQR method.
+
+    Args:
+        df (pd.DataFrame): DataFrame containing the dataset.
+        columns (list): List of columns to check for outliers.
+
+    Returns:
+        pd.DataFrame: DataFrame with outliers removed.
+    """
+    for column in columns:
+        Q1 = df[column].quantile(0.25)
+        Q3 = df[column].quantile(0.75)
+        IQR = Q3 - Q1
+        lower_bound = Q1 - 1.5 * IQR
+        upper_bound = Q3 + 1.5 * IQR
+        df = df[(df[column] >= lower_bound) & (df[column] <= upper_bound)]
+    return df
+
 
 def load_data(file_path: str) -> pd.DataFrame:
     """
