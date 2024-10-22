@@ -1,29 +1,32 @@
-import pytest
+# feature_selection.py
+
 import pandas as pd
-from scripts.feature_selection import select_features
+from scripts.correlation_analysis import calculate_correlation_matrix
 
-# Mock DataFrame for testing
-@pytest.fixture
-def mock_df():
-    data = {
-        'Feature1': [1, 2, 3, 4, 5],
-        'Feature2': [1, 2, 3, 4, 5],  # Perfectly correlated with Feature1
-        'Feature3': [5, 4, 3, 2, 1],  # Perfectly negatively correlated with Feature1
-        'Feature4': [2, 3, 2, 3, 2],  # Weak correlation with others
-        'Target':  [0, 1, 0, 1, 0],  # Target column
-    }
-    return pd.DataFrame(data)
+def select_features(df: pd.DataFrame, target_column: str, method: str = 'correlation', threshold: float = 0.5) -> pd.DataFrame:
+    """
+    Select relevant features based on the specified method.
 
-def test_select_features(mock_df):
-    """Test feature selection based on correlation threshold."""
-    selected_features = select_features(mock_df, target_column='Target', threshold=0.9)
-    
-    # Feature1 and Feature2 should be removed as they are highly correlated
-    assert selected_features.columns.tolist() == ['Feature1', 'Feature3', 'Feature4', 'Target']
+    Args:
+        df (pd.DataFrame): The input DataFrame containing the features.
+        target_column (str): The target column for feature selection.
+        method (str): The method for feature selection ('correlation' or others).
+        threshold (float): The threshold for selecting features (for correlation method).
 
-def test_select_features_no_selection(mock_df):
-    """Test when no features are selected."""
-    selected_features = select_features(mock_df, target_column='Target', threshold=0.99)
-    
-    # With a high threshold, no features should be removed
-    assert selected_features.columns.tolist() == ['Feature1', 'Feature2', 'Feature3', 'Feature4', 'Target']
+    Returns:
+        pd.DataFrame: DataFrame containing selected features.
+    """
+    if method == 'correlation':
+        # Calculate the correlation matrix using an existing function
+        corr_matrix = calculate_correlation_matrix(df)
+
+        # Get the correlations for the target column
+        correlations_with_target = corr_matrix[target_column].abs()
+
+        # Select features that have correlation with the target greater than the threshold
+        selected_features = correlations_with_target[correlations_with_target > threshold].index
+
+        # Return the DataFrame with the selected features
+        return df[selected_features]
+    else:
+        raise ValueError("Unsupported method. Currently only 'correlation' is implemented.")

@@ -1,18 +1,23 @@
-# feature_selection.py
-
 import pandas as pd
+from scripts.correlation_analysis import calculate_correlation_matrix
 
-def select_features(correlation_matrix: pd.DataFrame, target_column: str, threshold: float = 0.5) -> pd.DataFrame:
+def select_features(df: pd.DataFrame, target_column: str, method: str = 'correlation', threshold: float = 0.5) -> pd.DataFrame:
     """
-    Select relevant features based on correlation with the target column.
+    Select relevant features based on the specified method.
 
     Args:
-        correlation_matrix (pd.DataFrame): The input correlation matrix.
+        df (pd.DataFrame): The input DataFrame containing the features.
         target_column (str): The target column for feature selection.
-        threshold (float): The threshold for selecting features (default is 0.5).
+        method (str): The method for feature selection ('correlation' or others).
+        threshold (float): The threshold for selecting features (for correlation method).
 
     Returns:
         pd.DataFrame: DataFrame containing selected features.
     """
-    high_corr = correlation_matrix.index[correlation_matrix[target_column].abs() > threshold]
-    return correlation_matrix[high_corr]
+    if method == 'correlation':
+        # Reusing the calculate_correlation_matrix function instead of df.corr()
+        corr_matrix = calculate_correlation_matrix(df)
+        high_corr = corr_matrix[target_column][corr_matrix[target_column].abs() > threshold].index
+        return df[high_corr]
+    else:
+        raise ValueError("Unsupported method. Currently only 'correlation' is implemented.")
